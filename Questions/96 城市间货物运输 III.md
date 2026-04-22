@@ -1,3 +1,11 @@
+---
+Tags:
+  - 图论
+  - BellmanFord
+Languages:
+  - Python
+URL: https://kamacoder.com/problempage.php?pid=1154
+---
 ```python
 ncity, nroad = map(int, input().split())
 
