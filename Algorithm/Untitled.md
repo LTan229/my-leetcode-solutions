@@ -1,0 +1,37 @@
+---
+Tags:
+  - 数组
+  - 哈希表
+  - H100
+Languages:
+  - Python
+URL:
+---
+# 空间爆炸
+
+```python
+class Solution:
+    def firstMissingPositive(self, nums: List[int]) -> int:
+        nums = set(nums)
+        for i in range(1, int(1e5 + 1)):
+            if not i in nums:
+                return i
+        return 100001
+```
+
+# 原地哈希
+
+```python
+class Solution:
+    def firstMissingPositive(self, nums: List[int]) -> int:
+        n = len(nums)
+        for i in range(n):
+            # send the current value to the right place if it is not already in the right place
+            while 0 < nums[i] < n and nums[nums[i] - 1] != nums[i]: # condition prevents infinite loop
+                nexti = nums[i] - 1
+                nums[i], nums[nexti] = nums[nexti], nums[i]
+        for i in range(n):
+            if nums[i] != i + 1:
+                return i + 1
+        return n + 1
+```
