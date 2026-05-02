@@ -2,6 +2,8 @@
 顺序不能颠倒
 
 ## 查询
+
+```SQL
 SELECT col1 AS col1_alias, col2
 SELECT DISTINCT col -- 所有不重属性（包括NULL）
 
@@ -24,16 +26,21 @@ HAVING col1 >= 80 -- 筛选分组结果
 ORDER BY col1 DESC
 
 LIMIT 5 OFFSET 1;
+```
 
 ## 建表
+```sql
 CREATE TABLE table (
 col1 INT PRIMARY KEY,
 col2 VARCHAR(15),
 );
 
 DROP TABLE table;
+```
 
 ## 增删改
+
+```sql
 INSERT INTO table (col1, col2)
 VALUES ('xx1', 'xx2'), ('yy1', 'yy2'), ('xx3', NULL);
 
@@ -44,8 +51,11 @@ WHERE col1 = 'xx3';
 DELETE
 FROM table
 WHERE col1 = 'xx3';
+```
 
 ## 跨表
+
+```sql
 SELECT table1.col1, table1.col2, table2.col1
 FROM table1
 LEFT JOIN table2 
@@ -57,15 +67,34 @@ LEFT JOIN table2
 --UNION/UNION ALL 严格来说不是 JOIN。把两张表的结果纵向拼接（去重）
 ON table1.col2 = table2.col1
 WHERE col3 = 'xx'
+```
+
 
 
 # 函数
+
+
+```sql
+SELECT column_name1, 
+       window_function(column_name2) 
+       OVER ([PARTITION BY column_name3] [ORDER BY column_name4]) AS new_column
+FROM table_name;
+
+-- Aggregate Window Function
 AVG()
 SUM()
 MAX()
 MIN()
 COUNT() -- \*计算总行数，col计算列数量（忽略空白） COUNT(DISTINCT col)计算不重复列属性
+
+-- ranking window function
+RANK() -- 跳过重复
+DENSE_RANK() -- 不跳过
+ROW_NUMBER()
+PERCENT_RANK()
+
 ROUND(x, 1) -- 1位小数，整数省略
+```
 
 # 理论
 
@@ -222,7 +251,7 @@ ROUND(x, 1) -- 1位小数，整数省略
         + limit 起始偏移量，结果集的行数
     + 创建视图
         + `CREATE[OR REPLACE][ALGORITHM = {UNDEFINED | MERGE | TEMPTABLE}][DEFINER = user][SQL SECURITY { DEFINER | INVOKER }]VIEW view_name[(column_list)]AS select_statement[WITH [CASCADED | LOCAL] CHECK OPTION]`
-    + 系统函数
+    + ==系统函数==
         + CURDATE()/CURTIME() 返回当前日期/返回当前时间
         + NOW() 返回当前的日期和时间
         + DATE_FORMAT(date,fmt) 按照fmt的格式，对日期date进行格式化
@@ -231,7 +260,7 @@ ROUND(x, 1) -- 1位小数，整数省略
         + EXTRACT(unit FROM date) 返回日期date的指定部分
         + UNIX_TIMESTAMP 返回unix时间戳
         + FROM_UNIXTIME() 把unix时间戳转换为日期时间
-    + 常用的字符串函数
+    + ==常用的字符串函数==
         + CONCAT(str1,str2) 把字符串str1,str2连接成一个字符串
         + CONCAT_WS(sep,str1,str2)用指定的分隔符sep连接字符串
         + LEFT(str,len)/RIGHT(str,len) 从字符串左/右边起返回len长度的子字符串
@@ -318,15 +347,18 @@ ROUND(x, 1) -- 1位小数，整数省略
         + 隔离性：事务的隔离性要求每个读写事务的对象与其他事务的操作对象相互分离，即该事务提交前对其它事务都不可见
         + 事务一旦提交了，其结果就是永久性，就算发生了宕机等事故，数据库也能将数据恢复。
     + 并发带来的问题
-        + 更新丢失：最后的更新覆盖了其他事务之前的更新，而事务之间并不知道，发生更新丢失。
-        + 脏读： 一个事务读取了另一个事务未提交的数据
-        + 不可重复读：一个事务前后两次读取的同一数据不一致
-        + 幻读：一个事务两次查询的结果记录数不一致
+        + ==更新丢失==：最后的更新覆盖了其他事务之前的更新，而事务之间并不知道，发生更新丢失。
+        + ==脏读==： 一个事务读取了另一个事务===未提交===的数据
+        + ==不可重复读==：一个事务前后两次读取的同一数据不一致
+        + ==幻读==：一个事务两次查询的结果==记录数不一致==
     + Innodb的隔离级别
-        + 顺序读
-        + 可重复读
-        + 读已提交
-        + 读未提交
+	    + 读未提交：一个事务可以读取到另一个事务还没提交的数据。
+			+ 脏读
+		+ 读已提交：一个事务只能读取到别的事务已经提交的数据。
+			+ 不可重复读
+		+ 可重复读：在一个事务开始后，不管别人怎么改数据并提交，只要我的事务没结束，我看到的数据始终和事务开始时看到的一模一样。
+			+ 幻读
+        + 串行化 / 顺序读：所有的事务都必须“排队执行”。如果一个事务在读取某几行数据，其他事务想改这些数据就必须等它结束。
     + Innodb中的锁
         + 查询需要对资源共享锁
         + 数据修改需要对资源加排它锁
