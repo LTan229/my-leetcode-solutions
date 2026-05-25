@@ -1,45 +1,49 @@
 ---
 Tags:
+  - 设计
+  - 字典树
+  - 哈希表
+  - 字符串
+  - H100
 Languages:
   - Python
-URL: https://leetcode.cn/problems/course-schedule/?envType=study-plan-v2&envId=top-100-liked
+URL: https://leetcode.cn/problems/implement-trie-prefix-tree/submissions/727050706/?envType=study-plan-v2&envId=top-100-liked
 ---
 
 ```python
-from collections import deque
+class Trie:
 
-class Solution:
-    def canFinish(self, numCourses: int, prerequisites: List[List[int]]) -> bool:
-        indegs = [0 for _ in range(numCourses)] # in
-        reliant = {} # r[b] = [a,...]
+    def __init__(self):
+        self.root = {}
 
-        for a, b in prerequisites: # b->a
-            indegs[a] += 1
-            if not b in reliant:
-                reliant[b] = []
-            reliant[b].append(a)
-        
-        q = deque([])
+    def insert(self, word: str) -> None:
+        cur = self.root
+        for char in word:
+            if not char in cur:
+                cur[char] = {}
+            cur = cur[char]
+        cur[None] = True # only mark endpoint
+    
+    def findend(self, word):
+        cur = self.root
+        for char in word:
+            if char not in cur:
+                return None # use none to mark not found
+            cur = cur[char]
+        return cur
 
-        for idx, ind in enumerate(indegs):
-            if ind == 0:
-                q.append(idx)
+    def search(self, word: str) -> bool:
+        end = self.findend(word)
+        return (end is not None) and (None in end)
 
-        learnt = 0
-        
-        while q:
-            cur = q.popleft()
-            learnt += 1
-            if not cur in reliant:
-                continue
-            for c in reliant[cur]:
-                indegs[c] -= 1
-                if indegs[c] == 0:
-                    q.append(c)
-        
-        if learnt < numCourses:
-            return False
-        
-        return True
-            
+    def startsWith(self, prefix: str) -> bool:
+        end = self.findend(prefix)
+        return end is not None
+
+
+# Your Trie object will be instantiated and called as such:
+# obj = Trie()
+# obj.insert(word)
+# param_2 = obj.search(word)
+# param_3 = obj.startsWith(prefix)
 ```
