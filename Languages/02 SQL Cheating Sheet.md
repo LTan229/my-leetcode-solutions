@@ -81,19 +81,28 @@ SELECT column_name1,
 FROM table_name;
 
 -- Aggregate Window Function
-AVG()
-SUM()
-MAX()
-MIN()
-COUNT() -- \*计算总行数，col计算列数量（忽略空白） COUNT(DISTINCT col)计算不重复列属性
+AVG(col)
+SUM(col)
+MAX(col)
+MIN(col)
+COUNT(col) -- \*计算总行数，col计算列数量（忽略空白） COUNT(DISTINCT col)计算不重复列属性
 
 -- ranking window function
 RANK() -- 跳过重复
 DENSE_RANK() -- 不跳过
-ROW_NUMBER()
+ROW_NUMBER() 
 PERCENT_RANK()
 
 ROUND(x, 1) -- 1位小数，整数省略
+
+lag(feature, offset, default) -- 获取之前的某一行数据
+lead(featrure, offset, default) -- 获取之后的某一行
+
+FUNC() OVER(
+	PARTITION BY feature1, feature2
+	ORDER BY feature3
+	RANGE
+)
 ```
 
 # 理论
